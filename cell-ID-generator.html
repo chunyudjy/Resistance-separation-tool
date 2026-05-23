@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>锂电测试电芯 ID 生成器</title>
+    <style>
+        :root {
+            --primary-color: #2b579a;
+            --primary-hover: #1e3d6b;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+            --success-color: #2bc473;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #555555;
+        }
+
+        select, input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background-color: #fff;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(43, 87, 154, 0.1);
+        }
+
+        .result-section {
+            background-color: #f8f9fa;
+            border: 1px dashed var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .id-display {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #111111;
+            word-break: break-all;
+            background-color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-copy {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-copy:active {
+            transform: scale(0.98);
+        }
+
+        .toast {
+            display: none;
+            color: var(--success-color);
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            margin-top: -5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🔋 Battery Test ID Generator</h2>
+    
+    <div class="grid-container">
+        <div class="form-group">
+            <label for="equipment">Equipment</label>
+            <select id="equipment" onchange="generateID()">
+                <option value="Neware">Neware</option>
+                <option value="Biologic">Biologic</option>
+                <option value="Solartron">Solartron</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="test">Test</label>
+            <select id="test" onchange="generateID()">
+                <option value="HPPC">HPPC</option>
+                <option value="EIS">EIS</option>
+                <option value="Cycle">Cycle</option>
+                <option value="OCV">OCV</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="protocol">Protocol</label>
+            <select id="protocol" onchange="generateID()">
+                <option value="lab-existed">lab-existed</option>
+                <option value="LG">LG</option>
+                <option value="Stanford">Stanford</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="temp">Temp</label>
+            <select id="temp" onchange="generateID()">
+                <option value="0">0℃</option>
+                <option value="25">25℃</option>
+                <option value="45">45℃</option>
+                <option value="-20">-20℃</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="batteryType">Battery-type</label>
+            <select id="batteryType" onchange="generateID()">
+                <option value="Epetit">Epetit</option>
+                <option value="coin-cell">coin-cell</option>
+                <option value="pouch-cell">pouch-cell</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="cathode">Cathode</label>
+            <select id="cathode" onchange="generateID()">
+                <option value="NCM">NCM</option>
+                <option value="LFP">LFP</option>
+                <option value="LCO">LCO</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="anode">Anode</label>
+            <select id="anode" onchange="generateID()">
+                <option value="Gr">Gr (Graphite)</option>
+                <option value="Si">Si</option>
+                <option value="Double-layer">Double-layer</option>
+                <option value="Li">Li-metal</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="labelInput">Label (自定义备注)</label>
+            <input type="text" id="labelInput" placeholder="如: xx, batch01" oninput="generateID()">
+        </div>
+    </div>
+
+    <div class="result-section">
+        <label>生成的电芯 ID / 文件夹名称：</label>
+        <div class="id-display" id="idResult"></div>
+        <button class="btn-copy" onclick="copyToClipboard()">📋 复制到剪贴板</button>
+        <div class="toast" id="toastMessage">✓ 已成功复制到剪贴板！可以直接粘贴到测试软件中。</div>
+    </div>
+</div>
+
+<script>
+    function generateID() {
+        // 获取所有元素的值
+        const equipment = document.getElementById('equipment').value;
+        const test = document.getElementById('test').value;
+        const protocol = document.getElementById('protocol').value;
+        
+        // 温度处理：加上 'deg'
+        const tempValue = document.getElementById('temp').value;
+        const temp = tempValue !== "" ? tempValue + "deg" : "";
+        
+        const batteryType = document.getElementById('batteryType').value;
+        const cathode = document.getElementById('cathode').value;
+        const anode = document.getElementById('anode').value;
+        
+        // 自由文本输入处理
+        const label = document.getElementById('labelInput').value.trim();
+
+        // 组合成数组，过滤掉空值
+        const idparts = [equipment, test, protocol, temp, batteryType, cathode, anode];
+        if (label) {
+            idparts.push(label);
+        }
+
+        // 用 '-' 连接
+        const finalID = idparts.filter(part => part !== "").join('-');
+        
+        // 显示到界面上
+        document.getElementById('idResult').innerText = finalID;
+    }
+
+    function copyToClipboard() {
+        const idText = document.getElementById('idResult').innerText;
+        if (!idText) return;
+
+        // 使用现代化 Clipboard API 复制
+        navigator.clipboard.writeText(idText).then(() => {
+            const toast = document.getElementById('toastMessage');
+            toast.style.display = 'block';
+            
+            // 3秒后自动隐藏提示
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }).catch(err => {
+            alert('复制失败，请手动选择复制：' + err);
+        });
+    }
+
+    // 页面加载时自动运行一次，初始化生成默认ID
+    window.onload = function() {
+        generateID();
+    };
+</script>
+
+</body>
+</html>
